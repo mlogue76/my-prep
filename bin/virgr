@@ -1,0 +1,105 @@
+#! /bin/bash
+# 비아그라(vigr) 스크립트
+#
+# recursive grep, xgrep, 
+# 특정 패턴을 포함한 파일을 vi로 여는 등의
+# 여러가지 일을 해주는 script.
+# grep option parameter를 인식함
+# 예) gr -w csr_fetch
+#
+# gr: 현재 디렉토리에서 *.[ch] 파일 검색
+# ln -s xgrep-aux gr
+#
+# rgr: 현재 디렉토리에서 recursive 하게 *.[ch] 파일 검색
+# ln -s xgrep-aux rgr
+#
+# vigr: 현재 디렉토리에서 *.[ch] 파일 검색하여 vi open
+# ln -s xgrep-aux vigr
+#
+# virgr: 현재 디렉토리에서 recursive 하게 *.[ch] 파일 검색하여 vi open
+# ln -s xgrep-aux virgr
+#
+# xgrep: gr과 동일
+# ln -s xgrep-aux xgrep
+#
+#
+# @author yjlee
+#
+
+
+me=$(basename $0)
+if test $me == "xgrep-aux"; then 
+    echo Please do not call xgrep-aux directly!
+    exit -1
+fi
+
+SRCH_FILE="*.[ch]"
+
+args=""
+argnum=$#
+counter=0
+pattern_counter=0
+pattern=""
+
+while [ $counter -lt $argnum ]
+do
+    case "$1" in
+    -*) 
+        args=$args" "$1
+        ;;
+    *)
+        pattern_counter=`expr $pattern_counter + 1`
+        pattern=$1
+        ;;
+    esac
+
+    shift
+    counter=`expr $counter + 1`
+done
+
+
+if test "$pattern_counter" -ne 1
+then
+    echo "오류: 검색식이 필요합니다" 1>&2
+    exit -1
+fi
+
+file_list=""
+read_only=""
+
+case $me in
+    gr) 
+        egrep -H $args "$pattern" $SRCH_FILE 2>/dev/null
+        exit 0
+    ;;
+
+    rgr|xgrep)
+        find . -type f -name "$SRCH_FILE" \
+            | xargs egrep -H $args "$pattern" 2>/dev/null
+        exit 0
+    ;;
+
+    vigr|vgr)
+        file_list=`egrep -l -H $args "$pattern" $SRCH_FILE 2>/dev/null`
+        [ -z "$file_list" ] && exit 1
+        [ $me == "vgr" ] && read_only="-R"
+    ;;
+
+    virgr|vrgr)
+        file_list=`find . -type f -name "$SRCH_FILE" \
+                  ! \( -type d -name ".build" -prune \) \
+                  ! \( -type d -name ".svn" -prune \) \
+                  | xargs egrep -l -H $args "$pattern" 2>/dev/null`
+        [ -z "$file_list" ] && exit 1
+        [ $me == "vrgr" ] && read_only="-R"
+    ;;
+
+    *)
+        echo "gr, rgr, vigr, vgr,  virgr, vrgr,  xgrep 만 지원합니다" >&2
+        exit -1
+    ;;
+
+esac
+
+vi +/"$pattern" $read_only $file_list
+

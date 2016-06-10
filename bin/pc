@@ -1,0 +1,34 @@
+#!/bin/bash
+
+svn st | awk '/^A  \+/ {print $3}' > /tmp/add_list
+xargs -r -d '\n' svn remove --keep-local --force < /tmp/add_list
+xargs -r -d '\n' svn add < /tmp/add_list
+
+$TB_HOME/dev-util/patch-add.sh "$@"
+
+#PROGNAME=`basename $0`
+#
+#if [ $# != 1 ]
+#then
+#    echo "Usage: $PROGNAME <patch id>"
+#    exit 2
+#fi
+#
+#URL=`svn info | grep URL | awk '{print $2}'`
+#SRCCHK=`echo ${URL} | grep src`
+#
+#if [ "${SRCCHK}" != "" ]
+#then
+#    echo Not a top directory!!! exiting...
+#    exit 2
+#fi
+#
+#FILE=${URL##*/}_$1
+#echo Making patch file: ${FILE}
+#
+#svn diff > ${FILE}
+#
+#echo Importing...
+#echo
+#
+#svn import ${FILE} ${URL%/*}/patch/${FILE}

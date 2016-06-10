@@ -1,0 +1,3 @@
+#!/bin/sh
+
+$TB_HOME/dev-util/patch-apply.sh "$@"

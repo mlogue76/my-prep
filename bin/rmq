@@ -1,0 +1,3 @@
+#!/bin/sh
+
+svn st | grep '^?' | grep -v 'tools/prebuilt' | awk '{print $2}' | xargs rm -rf

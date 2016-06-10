@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [ "$1" == "-c" ]; then
+    (cd ~/tesker; ant console)
+else
+    (cd ~/tesker; ant check)
+fi

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+pattern=$1
+
+find ${TB_HOME:?} -name 'tests' -type d -exec \
+  find {} ! \( -name '.svn' -prune \) \
+          \( -name '*.[epc]*' \) \; \
+| xargs grep -En -e ${pattern:?}

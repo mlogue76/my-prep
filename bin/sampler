@@ -1,0 +1,27 @@
+#!/bin/sh
+
+if [ -z "$SAMPLER_HOME" ]; then
+    echo '$SAMPLER_HOME not defined.\n'
+    exit 1;
+fi
+
+if [ -z "$TB_HOME" ]; then
+    echo '$TB_HOME not defined.\n'
+    exit 1;
+fi
+
+TB_VERSION=`tbboot -v | sed -n -e 's/Tibero //' -e 's/RDBMS //' \
+-e '2 s/^\([0-9]\+\).\+$/\1/ p'`
+
+export TB_JDBC=$TB_HOME/client/lib/jar/tibero${TB_VERSION}-jdbc.jar
+
+if [ -f $TB_JDBC ];  then
+    if [ "$1" == "-t" ]; then
+        (cd $SAMPLER_HOME; ./run.sh tesker.properties)
+    else
+        (cd $SAMPLER_HOME; ./run.sh sampler.properties)
+    fi
+else
+    echo "JDBC not found.\n"
+    exit 1;
+fi

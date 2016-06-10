@@ -1,0 +1,25 @@
+#! /bin/sh
+
+prog= basename $0
+
+if [ -z "$TB_MSGW_HOME" ];
+then
+    echo '$TB_MSGW_HOME not defined.\n'
+    exit 1
+fi
+
+#Classpath
+commonspool=$TB_MSGW_HOME/lib/commons-pool.jar
+commonscollections=$TB_MSGW_HOME/lib/commons-collections.jar
+log4j=$TB_MSGW_HOME/lib/log4j-1.2.15.jar
+msjdbc=$TB_MSGW_HOME/lib/sqljdbc.jar
+gateway=$TB_MSGW_HOME/lib/tbgateway.jar
+
+#log4j properties
+#log4jfile must be exists on classpath
+log4jfile=log4j.properties
+
+#Main Class
+mainclass=com.tmax.tibero.gateway.main.GatewayMain
+
+java -Xms64m -Xmx512m -Dlog4j.configuration=$log4jfile -classpath $commonspool:$commonscollections:$log4j:$gateway:$msjdbc:$TB_MSGW_HOME $mainclass $* &

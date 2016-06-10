@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ $# -eq 1 ]; then
+    svn log --limit $1
+else
+    svn log
+fi
+

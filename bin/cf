@@ -1,0 +1,3 @@
+#!/bin/sh
+
+[ -n "$TB_HOME" -a -n "$TB_SID" ] && cat ${TB_HOME}/config/${TB_SID}.tip
